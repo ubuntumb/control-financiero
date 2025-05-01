@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface PaisesService {
     List<Paises> getAllPaises();
-    Optional<Paises> getPaisById(Integer id);
-    void savePais(Paises pais);
-    void deletePais(Integer id);
+    Optional<Paises> getPaisesById(Integer id);
+    Paises savePaises(Paises pais);
+    void deletePaises(Integer id);
 }
