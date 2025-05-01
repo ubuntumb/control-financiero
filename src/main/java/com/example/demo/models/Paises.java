@@ -17,6 +17,7 @@ public class Paises {
 
     @NotNull
     @Size(max = 80)
-    @Column(unique = true)
+    @Column(name = "descripcion", unique = true)
     private String descripcion;
 }
+       
