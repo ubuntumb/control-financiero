@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Listado Empleados</title>
+    <title>Formulario Pedidos de Compras</title>
     <link href="/resources/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
     <link href="/resources/css/sb-admin-2.min.css" rel="stylesheet">
@@ -25,7 +25,8 @@
             <li class="nav-item"><a class="nav-link" href="/usuarios"><i class="fas fa-user"></i><span>Usuarios</span></a></li>
             <li class="nav-item"><a class="nav-link" href="/roles"><i class="fas fa-address-book"></i><span>Roles</span></a></li>
             <li class="nav-item"><a class="nav-link" href="/sucursales"><i class="fas fa-home"></i><span>Sucursales</span></a></li>
-            <hr class="sidebar-divider">
+			<li class="nav-item"><a class="nav-link" href="/pedido-compras"><i class="fas fa-shopping-cart"></i> <span>Pedido de Compras</span></a></li>
+			<hr class="sidebar-divider">
             <div class="sidebar-heading">Referenciales</div>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
@@ -47,6 +48,7 @@
                         <a class="collapse-item" href="/tipoImpuestos">Tipo de Impuesto</a>
                         <a class="collapse-item" href="/proveedores">Proveedores</a>
                         <a class="collapse-item" href="/mercaderias">Mercaderías</a>
+                        
                         <div class="collapse-divider"></div>
                         <h6 class="collapse-header">Facturación:</h6>
                         <a class="collapse-item" href="/clientes">Clientes</a>
@@ -82,35 +84,72 @@
                 <div class="container-fluid">
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <div class="container mt-5">
-                            <h1>Empleados</h1>
-                            <a href="/empleados/form" class="btn btn-primary mb-3">Nuevo Empleado</a>
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Legajo</th>
-                                        <th>Nombres</th>
-                                        <th>Apellidos</th>
-                                        <th>Cédula</th>
-                                        <th>Barrio</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="empleado : ${empleados}">
-                                        <td th:text="${empleado.id}"></td>
-                                        <td th:text="${empleado.legajo}"></td>
-                                        <td th:text="${empleado.nombres}"></td>
-                                        <td th:text="${empleado.apellidos}"></td>
-                                        <td th:text="${empleado.cedulaIdentidad}"></td>
-                                        <td th:text="${empleado.barrio.descripcion}"></td>
-                                        <td>
-                                            <a th:href="@{/empleados/editar/{id}(id=${empleado.id})}" class="btn btn-warning btn-sm">Editar</a>
-                                            <button th:data-id="${empleado.id}" th:data-nombre="${empleado.nombres + ' ' + empleado.apellidos}" class="btn btn-danger btn-sm btn-eliminar">Eliminar</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <h1 th:text="${pedido.id == null ? 'Nuevo Pedido de Compra' : 'Editar Pedido de Compra'}"></h1>
+                            <form th:action="@{/pedido-compras/guardar}" th:object="${pedido}" method="post">
+							
+								<input type="hidden" id="id" name="id" th:value="${pedido.id}">
+								
+                                
+                                <div class="form-group">
+                                    <label for="proveedor">Proveedor</label>
+                                    <select id="proveedor" name="proveedor.id" class="form-control"> <!--required -->
+                                        <option value="" th:disabled="true" th:selected="${pedido.proveedor == null}">Seleccione un proveedor</option>
+                                        <option th:each="proveedor : ${listadoProveedores}" 
+                                                th:value="${proveedor.id}" 
+                                                th:text="${proveedor.razonSocial}"
+                                                th:selected="${pedido.proveedor != null and pedido.proveedor.id == proveedor.id}"></option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="observacion">Observación</label>
+                                    <textarea id="observacion" name="observacion" class="form-control" th:text="${pedido.observacion}" maxlength="200"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fecha">Fecha</label>
+                                    <input type="date" id="fecha" name="fecha" class="form-control" th:value="${pedido.fecha}" ><!--required -->
+                                </div>
+                                <div class="form-group">
+                                    <label for="estado">Estado</label>
+                                    <select id="estado" name="estado" class="form-control" > <!--required -->
+                                        <option value="" th:selected="${pedido.estado == null}">Seleccione</option>
+                                        <option value="A" th:selected="${pedido.estado == 'A'}">Activo</option>
+                                        <option value="I" th:selected="${pedido.estado == 'I'}">Inactivo</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sucursal">Sucursal</label>
+                                    <select id="sucursal" name="sucursal.id" class="form-control" > <!--required -->
+                                        <option value="" th:disabled="true" th:selected="${pedido.sucursal == null}">Seleccione una sucursal</option>
+                                        <option th:each="sucursal : ${listadoSucursales}" 
+                                                th:value="${sucursal.id}" 
+                                                th:text="${sucursal.descripcion}"
+                                                th:selected="${pedido.sucursal != null and pedido.sucursal.id == sucursal.id}"></option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="empleado">Empleado</label>
+                                    <select id="empleado" name="empleado.id" class="form-control" > <!--required -->
+                                        <option value="" th:disabled="true" th:selected="${pedido.empleado == null}">Seleccione un empleado</option>
+                                        <option th:each="empleado : ${listadoEmpleados}" 
+                                                th:value="${empleado.id}" 
+                                                th:text="${empleado.nombres + ' ' + empleado.apellidos}"
+                                                th:selected="${pedido.empleado != null and pedido.empleado.id == empleado.id}"></option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="condicion">Condición</label>
+                                    <select id="condicion" name="condicion.idCondicion" class="form-control" > <!--required -->
+                                        <option value="" th:disabled="true" th:selected="${pedido.condicion == null}">Seleccione una condición</option>
+                                        <option th:each="condicion : ${listadoCondiciones}" 
+                                                th:value="${condicion.idCondicion}" 
+                                                th:text="${condicion.descripcion}"
+												
+                                                th:selected="${pedido.condicion != null and pedido.condicion.idCondicion == condicion.idCondicion}"></option>
+                                    </select> <!-- th:value="${condicion.id}"-->
+                                </div>
+                                <button type="submit" class="btn btn-success">Guardar</button>
+                                <a href="/pedido-compras" class="btn btn-secondary">Cancelar</a>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -129,27 +168,5 @@
     <script src="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/resources/vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="/resources/js/sb-admin-2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.btn-eliminar').click(function() {
-                const id = $(this).data('id');
-                const nombre = $(this).data('nombre');
-                if (confirm('¿Estás seguro de eliminar este empleado [' + nombre + '] ?')) {
-                    $.ajax({
-                        url: '/empleados/eliminar',
-                        type: 'POST',
-                        data: { id: id },
-                        success: function(response) {
-                            alert("Empleado eliminado con éxito!!");
-                            location.reload();
-                        },
-                        error: function(xhr, status, error) {
-                            alert("Error al eliminar el empleado");
-                        }
-                    });
-                }
-            });
-        });
-    </script>
 </body>
 </html>
