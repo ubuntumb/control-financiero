@@ -10,8 +10,6 @@ import java.util.List;
 @Repository
 public interface MercaderiasRepository extends CrudRepository<Mercaderias, Integer> {
 
-    //@Query("SELECT m FROM Mercaderias m")
-	@Query("SELECT m FROM Mercaderias m JOIN FETCH m.impuesto")
-
+    @Query("SELECT m FROM Mercaderias m")
     List<Mercaderias> findByAll();
 }
