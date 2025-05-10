@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Listado de Clientes</title>
+</head>
+<body>
+    <h1>Listado de Clientes</h1>
+    <a th:href="@{/clientes/nuevo}">Agregar Cliente</a>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Razón Social</th>
+                <th>RUC</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Barrio</th>
+                <th>Condición de Pago</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="cliente : ${clientes}">
+                <td th:text="${cliente.id}">1</td>
+                <td th:text="${cliente.razonSocial}">Cliente XYZ</td>
+                <td th:text="${cliente.ruc}">1234567-8</td>
+                <td th:text="${cliente.direccion}">Av. Siempre Viva</td>
+                <td th:text="${cliente.telefono}">0991000000</td>
+                <td th:text="${cliente.email}">correo@cliente.com</td>
+                <td th:text="${cliente.barrio.descripcion}">Centro</td>
+                <td th:text="${cliente.condicionPago.descripcion}">Contado</td>
+                <td>
+                    <a th:href="@{'/clientes/editar/' + ${cliente.id}}">Editar</a>
+                    <a th:href="@{'/clientes/eliminar/' + ${cliente.id}}" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
